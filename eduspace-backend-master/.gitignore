@@ -1,0 +1,18 @@
+/logs
+
+/venv/*
+
+/.idea/*
+
+/gin/database/*.sqlite
+
+*.sh
+
+/gin/uploads/*
+
+/nohup.out
+
+/gin/scripts/run.py
+
+ ./.DS_Store
+ ./gin/.DS_Store

@@ -1,0 +1,54 @@
+# 定义变量
+# 无
+
+# 定义阶段
+stages:
+#   - test
+  - build
+  - deploy
+
+
+
+# 定义测试作业
+# format:
+#   stage: test
+#   script:
+#     - go fmt $(go list ./... | grep -v /vendor/)
+#     - go vet $(go list ./... | grep -v /vendor/)
+#     - go test -race $(go list ./... | grep -v /vendor/)
+
+# 定义编译作业
+build:
+  stage: build
+  script:
+    #  - docker volume rm $(docker volume ls -qf dangling=true) || true
+    - pwd
+    - ls
+    - echo "Building the application..."
+    - docker build --rm -t my-gin-app .
+  only:
+    - master
+
+# 定义部署作业
+deploy:
+  stage: deploy
+  script: 
+    - echo "Deploying the application..."
+    - docker stop backend-app || true
+    - docker rm backend-app || true
+    - docker rmi backend-app || true
+    - >
+      docker run   
+      --restart=always
+      --name backend-app
+      --mount type=bind,source=/root/backend/mydatabase.sqlite,target=/app/gin/database/mydatabase.sqlite
+      --mount type=bind,source=/root/backend/logs,target=/app/logs
+      --mount type=bind,source=/etc/localtime,target=/etc/localtime,readonly
+      --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock
+      --mount type=bind,source=/root/backend/scripts/run,target=/app/gin/scripts/run
+      -itd
+      -p 8081:8080
+      "my-gin-app"
+  only:
+    - master
+#   environment: production

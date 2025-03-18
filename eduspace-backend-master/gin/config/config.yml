@@ -1,0 +1,49 @@
+author: Tan
+
+log:
+  path: ./logs
+  level: debug
+  needCaller: false  # 是否需要打印调用者（堆栈）信息
+
+db:
+  type: mysql
+  mysql:
+    host: 114.116.211.180
+    port: 3306
+    user: EDU_TH_2
+    password: EDUTH2666
+    database: EDU_TH_2
+
+  sqlite:
+    file: ./gin/database/mydatabase.sqlite
+
+  postgresql:
+    host: localhost
+    port: 5432
+    user: myuser
+    password: mysecretpassword
+    database: mydatabase
+
+server:
+  port: 8080
+
+security:
+  limit_submission_time: true
+
+casbin:
+  model_path: ./gin/config/rbac_model.conf
+  adapter_type: mysql
+  mysql:
+    user: EDU_TH_2
+    password: EDUTH2666
+    host: 114.116.211.180
+    port: 3306
+    database: casbin
+
+minio:
+  endpoint: 114.116.211.180:9000
+  access_key_id: EDU_TH_2
+  secret_access_key: EDU_TH_2_666
+
+scripts:
+  path: ./gin/scripts/

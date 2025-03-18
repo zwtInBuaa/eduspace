@@ -1,0 +1,80 @@
+# 定义变量
+# 无
+
+# 定义阶段
+stages:
+  - test
+  - build
+  - deploy
+
+# 定义测试作业
+check-style:
+  stage: test
+  script:
+    - docker build . -t "vue:dev-$CI_PIPELINE_ID" && docker image rm "vue:dev-$CI_PIPELINE_ID"
+  only:
+    refs:
+      - merge_requests
+
+# 定义预部署作业
+verify:
+  stage: test
+  script:
+    - docker build -f build.Dockerfile . -t "vue:prod-$CI_PIPELINE_ID" && docker image rm "vue:prod-$CI_PIPELINE_ID"
+  only:
+    refs:
+      - merge_requests
+
+# 定义编译作业
+build-develop:
+  stage: build
+  script:
+    - pwd
+    - ls
+    - echo "Building the application..."
+    - docker build -t my-vue-app .
+  only:
+    - develop
+
+# 定义部署作业
+deploy-develop:
+  stage: deploy
+  script:
+    - echo "Deploying the application..."
+    - docker stop front-app && docker rm front-app || true
+    - >
+      docker run   
+      --restart=always
+      --name front-app
+      -itd
+      -p 8686:8686
+      "my-vue-app"
+  only:
+    - develop
+
+# 定义编译作业
+build-production:
+  stage: build
+  script:
+    - pwd
+    - ls
+    - echo "Building the application..."
+    - docker build -f build.Dockerfile -t my-vue-app-pro .
+  only:
+    - production
+
+# 定义部署作业
+deploy-production:
+  stage: deploy
+  script:
+    - echo "Deploying the application..."
+    - docker stop front-app-pro && docker rm front-app-pro || true
+    - >
+      docker run   
+      --restart=always
+      --name front-app-pro
+      -itd
+      -p 6060:6060
+      "my-vue-app-pro"
+  only:
+    - production
